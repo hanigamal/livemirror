@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Settings xmlns="Xnet">
+  <Setting Name="Mirror.FromDir" Value="C:\Users\Sam\Documents\Projects\phpframework" TypeHint="System.String" />
+  <Setting Name="Mirror.ToDir" Value="\\Eridanus\www\phpframework" TypeHint="System.String" />
+  <Setting Name="Mirror.AutoStart" Value="True" TypeHint="System.Boolean" />
+  <Setting Name="Form.Config.Position.Top" Value="342" TypeHint="System.Int32" />
+  <Setting Name="Form.Config.Position.Left" Value="1745" TypeHint="System.Int32" />
+  <Setting Name="Form.Config.Position.Width" Value="404" TypeHint="System.Int32" />
+  <Setting Name="Form.Config.Position.Height" Value="389" TypeHint="System.Int32" />
+  <Setting Name="Form.Config.Position.WindowState" Value="Normal" TypeHint="System.Windows.Forms.FormWindowState" />
+  <Setting Name="Mirror.IgnoredPaths" Value="System\config.php|" TypeHint="System.String" />
+  <Setting Name="Form.IgnoredPath.Position.Top" Value="397" />
+  <Setting Name="Form.IgnoredPath.Position.Left" Value="1822" />
+  <Setting Name="Form.IgnoredPath.Position.Width" Value="526" />
+  <Setting Name="Form.IgnoredPath.Position.Height" Value="432" />
+  <Setting Name="Form.IgnoredPath.Position.WindowState" Value="Normal" />
+  <Setting Name="Form.InputBox.Position.Top" Value="548" />
+  <Setting Name="Form.InputBox.Position.Left" Value="943" />
+  <Setting Name="Form.InputBox.Position.Width" Value="410" />
+  <Setting Name="Form.InputBox.Position.Height" Value="106" />
+  <Setting Name="Form.InputBox.Position.WindowState" Value="Normal" />
+  <Setting Name="Form.ConflictResolution.Position.Top" Value="292" TypeHint="System.Int32" />
+  <Setting Name="Form.ConflictResolution.Position.Left" Value="1823" TypeHint="System.Int32" />
+  <Setting Name="Form.ConflictResolution.Position.Width" Value="732" TypeHint="System.Int32" />
+  <Setting Name="Form.ConflictResolution.Position.Height" Value="489" TypeHint="System.Int32" />
+  <Setting Name="Form.ConflictResolution.Position.WindowState" Value="Normal" TypeHint="System.Windows.Forms.FormWindowState" />
+</Settings>
