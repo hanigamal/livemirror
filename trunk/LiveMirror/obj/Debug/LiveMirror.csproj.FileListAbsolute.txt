@@ -1,0 +1,13 @@
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.ConfigForm.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.Properties.Resources.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.csproj.GenerateResource.Cache
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\bin\Debug\LiveMirror.exe
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\bin\Debug\LiveMirror.pdb
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.exe
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.pdb
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.ConflictResolutionForm.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.FileActionControl.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.IgnoredPathControl.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.IgnoredPathsForm.resources
+C:\Users\Sam\Documents\Visual Studio 2008\Projects\LiveMirror\LiveMirror\obj\Debug\LiveMirror.InputBox.resources
