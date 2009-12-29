@@ -175,6 +175,13 @@ namespace LiveMirror
                         File.Copy(sourceFile.FullName, Path.Combine(toDir, mirrorUtils.BasePath(sourceFile.FullName)), true);
                         RemoveConflict(action);
                     });
+                action.SetAction2("Copy to Source");
+                action.Action2 += new EventHandler(
+                    delegate(object sender, EventArgs e)
+                    {
+                        File.Copy(Path.Combine(toDir, mirrorUtils.BasePath(sourceFile.FullName)),sourceFile.FullName, true);
+                        RemoveConflict(action);
+                    });
 
             }
             else if (type == ConflictType.NotInSource)
