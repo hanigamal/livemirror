@@ -1,0 +1,23 @@
+#summary Description of conflict resolution method
+#labels Phase-Design
+
+= Comparison Method =
+
+  # Compare files in current source directory
+    # New conflict if file is not in target
+    # Compare file contents byte-for-byte, new conflict if not equal
+  # New conflict for each file in target which isn't in source 
+  # Compare sub-directories in current source directory
+    # New conflict if directory not in target
+    # Go to 1 with sub-directory as current directory
+  # New conflict for each sub-directory in target which isn't in source
+
+= Resolutions =
+
+|| *Conflict* || *Possible Resolutions`*`* ||
+|| Directory not in source || Copy to source / Delete ||
+|| Directory not in target || Copy to target ||
+|| File modified in target || Copy to source / Copy from source ||
+|| File not in target || Copy to target ||
+
+`*` All conflicts may be ignored
