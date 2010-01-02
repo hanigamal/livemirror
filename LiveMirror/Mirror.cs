@@ -97,8 +97,10 @@ namespace LiveMirror
                 Directory.CreateDirectory(newPath);
                 mirrorUtils.CopyDirectory(e.FullPath, newPath);
             }
-            else
+            else if (File.Exists(e.FullPath))
                 File.Copy(e.FullPath, newPath);
+            else
+                return;
             LogMessage.Raise(this, ((directory) ? "Directory '" : "File '") + mirrorUtils.BasePath(e.FullPath) + "' Created");
         }
     }
