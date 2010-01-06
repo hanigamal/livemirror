@@ -18,6 +18,7 @@
 || Directory not in source || Copy to source / Delete ||
 || Directory not in target || Copy to target ||
 || File modified in target || Copy to target / Copy to source ||
+|| File not in source || Copy to source ||
 || File not in target || Copy to target ||
 
 `*` All conflicts may be ignored
