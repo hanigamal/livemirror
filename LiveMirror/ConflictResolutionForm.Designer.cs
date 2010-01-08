@@ -41,18 +41,18 @@
             this.pnlConflicts.Size = new System.Drawing.Size(424, 451);
             this.pnlConflicts.TabIndex = 0;
             this.pnlConflicts.WrapContents = false;
+            this.pnlConflicts.ControlRemoved += new System.Windows.Forms.ControlEventHandler(this.pnlConflicts_ControlRemoved);
             // 
-            // ConflictResolutionForm
+            // NewConflictResolutionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(424, 451);
             this.Controls.Add(this.pnlConflicts);
             this.MinimumSize = new System.Drawing.Size(440, 100);
-            this.Name = "ConflictResolutionForm";
+            this.Name = "NewConflictResolutionForm";
             this.Text = "ConflictResolution";
-            this.Load += new System.EventHandler(this.ConflictResolutionForm_Load);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ConflictResolutionForm_FormClosed);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.NewConflictResolutionForm_FormClosed);
             this.ResumeLayout(false);
 
         }

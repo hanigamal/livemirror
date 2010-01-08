@@ -27,6 +27,9 @@ using System.Windows.Forms;
 
 namespace LiveMirror
 {
+    /// <summary>
+    /// Saves the position of a form in a config file
+    /// </summary>
     public class FormPositionSaver
     {
         string formName;

@@ -37,25 +37,45 @@ namespace LiveMirror
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            //New Debug Listener
             DefaultTraceListener traceListener = new DefaultTraceListener();
             traceListener.AssertUiEnabled = true;
             Debug.Listeners.Add(traceListener);
+
+            //Trick to wait for the IDE to attatch to the process
+            Debug.Assert(true);
+
             if (Debugger.IsAttached)
                 Application.Run(new ConfigForm());
             else
             {
+                //Catch unhandled exceptions if there is no debugger attached
                 try
                 {
                     Application.Run(new ConfigForm());
                 }
                 catch (Exception ex)
                 {
-                    string errorMsg = "Unhandled Exception :\t" + ex.Message + "" + Environment.NewLine
-                         + "Raised in :\t\t" + ex.TargetSite + Environment.NewLine
-                         + "-----------------------------------------------------------------" + Environment.NewLine
-                         + "Stack Trace : \n" + ex.StackTrace + ")";
+                    string errorMsg = (
+                           DateTime.Now.ToUniversalTime() + "\n"
+                         + "Unhandled Exception :\t" + ex.Message + "\n"
+                         + "Raised in :\t\t" + ex.TargetSite + "\n\n"
+                         + "The Program cannot continue and will now exit.\n\n"
+                         + "If submitting an error report for this,\n"
+                         + "Please include debug.txt from the programs execution directory.\n"
+                         + "-----------------------------------------------------------------\n"
+                         + "Stack Trace : \n" + ex.StackTrace + ")"
+                         ).Replace("\n",Environment.NewLine);
 
-                    MessageBox.Show(errorMsg, "Fatal Error!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    try
+                    {
+                        errorMsg = DateTime.Now.ToUniversalTime() + Environment.NewLine + errorMsg;
+                        System.IO.File.WriteAllText("debug.txt", errorMsg);
+                        MessageBox.Show(errorMsg, "Fatal Error!", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    }
+                    catch
+                    { }
                 }
             }
         }

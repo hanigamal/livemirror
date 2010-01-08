@@ -26,7 +26,7 @@ using System.Text;
 
 namespace LiveMirror
 {
-    class EventArgs<TData> : EventArgs
+    public class EventArgs<TData> : EventArgs
     {
         public TData Data { private set; get; }
 
