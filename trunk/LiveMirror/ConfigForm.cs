@@ -39,6 +39,7 @@ namespace LiveMirror
         public ConfigForm()
         {
             InitializeComponent();
+
             config.Load("settings.xml");
             InputBox.Config = config;
             new FormPositionSaver("Form.Config", this, config);
@@ -89,15 +90,18 @@ namespace LiveMirror
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            try
-            {
+            //try
+            //{
                 lstChanges.Items.Clear();
-                ConflictResolutionForm conflict = new ConflictResolutionForm(fromDir, toDir,config);
-                DialogResult result = conflict.ShowDialog();
-                if (result != DialogResult.OK)
+                ConflictResloution resolver = new ConflictResloution(config);
+                if (resolver.Proccess(fromDir, toDir) > 0)
                 {
-                    MessageBox.Show("Cannot mirror, Conflicts not resolved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-                    return;
+                    DialogResult result = ConflictResolutionForm.Show(resolver.Conflicts,config);
+                    if (result != DialogResult.OK)
+                    {
+                        MessageBox.Show("Cannot mirror, Conflicts not resolved", "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                        return;
+                    }
                 }
                 mirror = new Mirror(fromDir, toDir);
                 mirror.LogMessage += new EventHandler<EventArgs<string>>(mirror_LogMessage);
@@ -105,22 +109,22 @@ namespace LiveMirror
                 btnStop.Enabled = true;
                 btnFrom.Enabled = false;
                 btnTo.Enabled = false;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
 
         void mirror_LogMessage(object sender, EventArgs<string> e)
         {
-            string message = e.Data;
             if (InvokeRequired)
                 Invoke(new MethodInvoker(delegate() { mirror_LogMessage(sender, e); }));
             else
             {
-                lstChanges.Items.Add(message);
-                lstChanges.TopIndex = lstChanges.Items.Count;
+                string message = e.Data;
+                lstChanges.Items.Add(String.Format("[{0}] {1}",DateTime.Now.ToString("HH:mm:ss"),message));
+                lstChanges.TopIndex = lstChanges.Items.Count - 1;
             }
         }
 

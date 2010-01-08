@@ -28,15 +28,27 @@ namespace LiveMirror
 {
     static class Extensions
     {
+        /// <summary>
+        /// Raises an event only if it isnt null (ie has been attached to)
+        /// </summary>
+        /// <param name="eventHandler"></param>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void Raise(this EventHandler eventHandler, object sender, EventArgs e)
         {
             if (eventHandler != null)
-                eventHandler.Invoke(sender, e);
+                eventHandler(sender, e);
         }
+        /// <summary>
+        /// Raises an event only if it isnt null (ie has been attached to)
+        /// </summary>
+        /// <param name="eventHandler"></param>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public static void Raise<TEventArgs>(this EventHandler<TEventArgs> eventHandler, object sender, TEventArgs e) where TEventArgs : EventArgs
         {
             if (eventHandler != null)
-                eventHandler.Invoke(sender, e);
+                eventHandler(sender, e);
         }
     }
 }

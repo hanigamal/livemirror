@@ -38,7 +38,6 @@ namespace LiveMirror
             this.fromDir = fromDir;
             this.toDir = toDir;
         }
-
         public string NewPath(string file)
         {
             string filePath = file;

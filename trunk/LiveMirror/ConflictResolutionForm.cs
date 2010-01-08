@@ -29,201 +29,83 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace LiveMirror
 {
+    /// <summary>
+    /// Presents users with all detected conflicts and their resolutions
+    /// </summary>
     public partial class ConflictResolutionForm : Form
     {
-        public enum ConflictType
+        /// <summary>
+        /// Modally shows the form with the given conflicts
+        /// </summary>
+        /// <param name="conflicts">Conflicts</param>
+        /// <param name="config"></param>
+        /// <returns>Ok or Cancel</returns>
+        public static DialogResult Show(List<ConflictResloution.Conflict> conflicts, Config config)
         {
-            NotInTarget,
-            ModifiedInTarget,
-            NotInSource,
-            DirectoryNotInTarget,
-            DirectoryNotInSource
+            //Create the form
+            ConflictResolutionForm form = new ConflictResolutionForm(config);
+
+            foreach (ConflictResloution.Conflict conflict in conflicts)
+            {
+                //New file action control
+                FileActionControl fileAction = new FileActionControl();
+                //Map all action clicks to the respective resolution
+                fileAction.Action1 += new EventHandler((sender, e) =>
+                {
+                    //Perform the resolution
+                    conflict.PerformResolution(conflict.Resolutions[0]);
+                    //Remove the control from the panel
+                    form.pnlConflicts.Controls.Remove(fileAction);
+                });
+                fileAction.Action2 += new EventHandler((sender, e) => 
+                {
+                    conflict.PerformResolution(conflict.Resolutions[1]);
+                    form.pnlConflicts.Controls.Remove(fileAction);
+                });
+                fileAction.Action3 += new EventHandler((sender, e) => 
+                {
+                    conflict.PerformResolution(conflict.Resolutions[2]);
+                    form.pnlConflicts.Controls.Remove(fileAction);
+                });
+                //Function to insert spaces in between camel cased words ie BlahBlah => Blah Blah
+                Func<Enum,string> getText = e => Regex.Replace(e.ToString(), "([a-z])([A-Z])", "$1 $2", RegexOptions.None);
+                //Setup the file action control
+                fileAction.SetFileInfo(conflict.RelativePathName, getText(conflict.Type));
+                //Set resolutions
+                if (!conflict.Resolutions[0].Equals(ConflictResloution.Resolution.None))
+                    fileAction.SetAction1(getText(conflict.Resolutions[0].Type));
+                if (!conflict.Resolutions[1].Equals(ConflictResloution.Resolution.None))
+                    fileAction.SetAction2(getText(conflict.Resolutions[1].Type));
+                if (!conflict.Resolutions[2].Equals(ConflictResloution.Resolution.None))
+                    fileAction.SetAction3(getText(conflict.Resolutions[2].Type));
+                //Add to panel
+                form.pnlConflicts.Controls.Add(fileAction);
+
+            }
+            //Show the form modally
+            return form.ShowDialog();
         }
-
-        string fromDir, toDir;
-        string[] ignoredPaths;
+        /// <summary>
+        /// Holds the application configuration
+        /// </summary>
         Config config;
-        MirrorUtils mirrorUtils;
-
-        public ConflictResolutionForm(string fromDir, string toDir, Config config)
+        private ConflictResolutionForm(Config config)
         {
-            if (!Directory.Exists(fromDir))
-                throw new DirectoryNotFoundException("From directory does not exist");
-
-            if (!Directory.Exists(toDir))
-                throw new DirectoryNotFoundException("To directory does not exist");
-
-            this.mirrorUtils = new MirrorUtils(fromDir, toDir);
-            this.fromDir = fromDir;
-            this.toDir = toDir;
-            this.config = config;
-            this.ignoredPaths = config.Get<string>("Mirror.IgnoredPaths", true, "").Split('|');
-
             InitializeComponent();
+
+            this.config = config;
 
             new FormPositionSaver("Form.ConflictResolution", this, config);
         }
 
-        private void ConflictResolutionForm_Load(object sender, EventArgs e)
+
+        private void pnlConflicts_ControlRemoved(object sender, ControlEventArgs e)
         {
-            DirectoryInfo source = new DirectoryInfo(fromDir);
-            DirectoryInfo target = new DirectoryInfo(toDir);
-
-            ProcessDirectory(source, target);
-            if (pnlConflicts.Controls.Count == 0)
-            {
-                DialogResult = DialogResult.OK;
-                this.Close();
-            }
-        }
-        void ProcessDirectory(DirectoryInfo sourceDirInfo, DirectoryInfo targetDirInfo)
-        {
-            List<FileInfo> targetFiles = new List<FileInfo>(targetDirInfo.GetFiles());
-
-            foreach (FileInfo sourceFile in sourceDirInfo.GetFiles())
-            {
-                FileInfo targetFile = targetFiles.Find(f => f.Name == sourceFile.Name);
-                if (targetFile != null)
-                    targetFiles.Remove(targetFile);
-                if (targetFile == null)
-                    NewConflict(ConflictType.NotInTarget, sourceFile, null);
-                else if (!mirrorUtils.FilesContentsEqual(sourceFile, targetFile))
-                    NewConflict(ConflictType.ModifiedInTarget, sourceFile, targetFile);
-            }
-            foreach (FileInfo targetFile in targetFiles)
-                NewConflict(ConflictType.NotInSource, null, targetFile);
-
-            List<DirectoryInfo> targetDirs = new List<DirectoryInfo>(targetDirInfo.GetDirectories());
-
-            foreach (DirectoryInfo sourceDir in sourceDirInfo.GetDirectories())
-            {
-                DirectoryInfo targetDir = targetDirs.Find(d => d.Name == sourceDir.Name);
-                if (targetDir == null)
-                    NewConflict(ConflictType.DirectoryNotInTarget, sourceDir, targetDir);
-                else
-                {
-                    targetDirs.Remove(targetDir);
-                    ProcessDirectory(sourceDir, targetDir);
-                }
-            }
-            foreach (DirectoryInfo targetDir in targetDirs)
-                NewConflict(ConflictType.DirectoryNotInSource, null, targetDir);
-        }
-        void NewConflict(ConflictType type, DirectoryInfo sourceDir, DirectoryInfo targetDir)
-        {
-            if (sourceDir != null && ignoredPaths.Contains(mirrorUtils.BasePath(sourceDir.FullName)))
-                return;
-            if (targetDir != null && ignoredPaths.Contains(mirrorUtils.BasePath(targetDir.FullName)))
-                return;
-
-            FileActionControl action = new FileActionControl();
-            if (type == ConflictType.DirectoryNotInSource)
-            {
-                action.SetFileInfo(mirrorUtils.BasePath(targetDir.FullName) + " (Directory)", "Not in Source");
-                action.SetAction1("Copy to Source");
-                action.Action1 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        mirrorUtils.CopyDirectory(targetDir.FullName, Path.Combine(fromDir, mirrorUtils.BasePath(targetDir.FullName)));
-                        RemoveConflict(action);
-                    });
-                action.SetAction2("Delete");
-                action.Action2 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        targetDir.Delete(true);
-                        RemoveConflict(action);
-                    });
-            }
-            else if (type == ConflictType.DirectoryNotInTarget)
-            {
-                action.SetFileInfo(mirrorUtils.BasePath(sourceDir.FullName) + " (Directory)", "Not in Target");
-                action.SetAction1("Copy to Target");
-                action.Action1 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        mirrorUtils.CopyDirectory(sourceDir.FullName, Path.Combine(toDir, mirrorUtils.BasePath(sourceDir.FullName)));
-                        RemoveConflict(action);
-                    });
-            }
-            action.SetAction3("Ignore");
-            action.Action3 += new EventHandler(
-                delegate(object sender, EventArgs e)
-                {
-                    RemoveConflict(action);
-                });
-            pnlConflicts.Controls.Add(action);
-        }
-        void NewConflict(ConflictType type, FileInfo sourceFile, FileInfo targetFile)
-        {
-            if (sourceFile != null && ignoredPaths.Contains(mirrorUtils.BasePath(sourceFile.FullName)))
-                return;
-            if (targetFile != null && ignoredPaths.Contains(mirrorUtils.BasePath(targetFile.FullName)))
-                return;
-
-            FileActionControl action = new FileActionControl();
-            if (type == ConflictType.ModifiedInTarget)
-            {
-                action.SetFileInfo(mirrorUtils.BasePath(sourceFile.FullName), "Modified in Target");
-                action.SetAction1("Copy to Target");
-                action.Action1 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        File.Copy(sourceFile.FullName, Path.Combine(toDir, mirrorUtils.BasePath(sourceFile.FullName)), true);
-                        RemoveConflict(action);
-                    });
-                action.SetAction2("Copy to Source");
-                action.Action2 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        File.Copy(Path.Combine(toDir, mirrorUtils.BasePath(sourceFile.FullName)),sourceFile.FullName, true);
-                        RemoveConflict(action);
-                    });
-
-            }
-            else if (type == ConflictType.NotInSource)
-            {
-                action.SetFileInfo(mirrorUtils.BasePath(targetFile.FullName), "Not in Source");
-                action.SetAction1("Copy to Source");
-                action.Action1 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        File.Copy(targetFile.FullName, Path.Combine(fromDir, mirrorUtils.BasePath(targetFile.FullName)));
-                        RemoveConflict(action);
-                    });
-                action.SetAction2("Delete");
-                action.Action2 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        targetFile.Delete();
-                        RemoveConflict(action);
-                    });
-            }
-            else if (type == ConflictType.NotInTarget)
-            {
-                action.SetFileInfo(mirrorUtils.BasePath(sourceFile.FullName), "Not in Target");
-                action.SetAction1("Copy to Target");
-                action.Action1 += new EventHandler(
-                    delegate(object sender, EventArgs e)
-                    {
-                        File.Copy(sourceFile.FullName, Path.Combine(toDir, mirrorUtils.BasePath(sourceFile.FullName)));
-                        RemoveConflict(action);
-                    });
-            }
-            action.SetAction3("Ignore");
-            action.Action3 += new EventHandler(
-                delegate(object sender, EventArgs e)
-                {
-                    RemoveConflict(action);
-                });
-            pnlConflicts.Controls.Add(action);
-        }
-        void RemoveConflict(FileActionControl conflict)
-        {
-            pnlConflicts.Controls.Remove(conflict);
+            //Close the form if all conflicts have been resolved
             if (pnlConflicts.Controls.Count == 0)
             {
                 DialogResult = DialogResult.OK;
@@ -231,8 +113,12 @@ namespace LiveMirror
             }
         }
 
-        private void ConflictResolutionForm_FormClosed(object sender, FormClosedEventArgs e)
+        private void NewConflictResolutionForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if (pnlConflicts.Controls.Count == 0)
+                DialogResult = DialogResult.OK;
+            else
+                DialogResult = DialogResult.Cancel;
         }
     }
 }
