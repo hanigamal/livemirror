@@ -90,8 +90,8 @@ namespace LiveMirror
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            //try
-            //{
+            try
+            {
                 lstChanges.Items.Clear();
                 ConflictResloution resolver = new ConflictResloution(config);
                 if (resolver.Proccess(fromDir, toDir) > 0)
@@ -109,11 +109,11 @@ namespace LiveMirror
                 btnStop.Enabled = true;
                 btnFrom.Enabled = false;
                 btnTo.Enabled = false;
-            //}
-            //catch (Exception ex)
-            //{
-            //    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         void mirror_LogMessage(object sender, EventArgs<string> e)
